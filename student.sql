@@ -1,44 +1,166 @@
--- Create the database
-CREATE DATABASE StudentRecords;
-GO
+CREATE DATABASE school;
 
--- Use the newly created database
-USE StudentRecords;
-GO
+USE school;
 
--- Create the Students table with constraints
-CREATE TABLE Students (  -- Changed table name to match queries
-    StudentID INT IDENTITY(1,1) PRIMARY KEY,
-    Name NVARCHAR(100) NOT NULL,
-    Age INT CHECK (Age > 0),
-    Class NVARCHAR(50) NOT NULL,
-    FeesPaid DECIMAL(10,2) CHECK (FeesPaid >= 0),
-    TotalFees DECIMAL(10,2) CHECK (TotalFees >= 0),
-    Address NVARCHAR(255),
-    PhoneNumber NVARCHAR(15) UNIQUE,  
-    Email NVARCHAR(100) UNIQUE,        
-    AdmissionDate DATE DEFAULT GETDATE(),
-    AttendancePercentage DECIMAL(5,2) CHECK (AttendancePercentage BETWEEN 0 AND 100), -- Added
-    ExamScore DECIMAL(5,2) CHECK (ExamScore BETWEEN 0 AND 100), -- Added
-    Remarks NVARCHAR(255), -- Added
-    CONSTRAINT UQ_Student UNIQUE (Name, Age, Class), 
-    CONSTRAINT CHK_Fees CHECK (FeesPaid <= TotalFees) 
+-- Students Table
+CREATE TABLE Students (
+    StudentID INT PRIMARY KEY IDENTITY,
+    Name VARCHAR(100),
+    Age INT,
+    ClassID INT,
+    TuitionFees DECIMAL(10, 2),
+    TransportFees DECIMAL(10, 2),
+    ExamFees DECIMAL(10, 2),
+    FeesPaid DECIMAL(10, 2),
+    Address VARCHAR(255),
+    PhoneNumber VARCHAR(20),
+    Email VARCHAR(100),
+    AdmissionDate DATE,
+    AttendancePercentage DECIMAL(5, 2),
+    ExamScore DECIMAL(5, 2),
+    Status VARCHAR(50),
+    Remarks TEXT
 );
-GO
 
--- Insert sample data
-INSERT INTO Students (Name, Age, Class, FeesPaid, TotalFees, Address, PhoneNumber, Email, AttendancePercentage, ExamScore, Remarks)
-VALUES
-('Rahul Sharma', 16, '10th Grade', 25000, 50000, 'Mumbai, India', '9876543210', 'rahul@example.com', 85.5, 78.2, 'Good in mathematics, needs improvement in English'),
-('Anjali Verma', 15, '9th Grade', 20000, 50000, 'Bangalore, India', '9823456789', 'anjali@example.com', 92.3, 88.0, 'Excellent in science, very active in class'),
-('Arjun Kumar', 14, '8th Grade', 15000, 40000, 'Delhi, India', '9876501234', 'arjun@example.com', 75.8, 65.4, 'Struggles with algebra, requires extra coaching'),
-('Neha Singh', 17, '11th Grade', 30000, 60000, 'Kolkata, India', '9845123456', 'neha@example.com', 89.4, 92.1, 'Top performer in physics, recommended for Olympiad'),
-('Rohan Das', 18, '12th Grade', 32000, 65000, 'Chennai, India', '9978123456', 'rohan@example.com', 70.2, 55.8, 'Needs to focus more on academics, often late'),
-('Pooja Iyer', 15, '9th Grade', 22000, 50000, 'Hyderabad, India', '9812345678', 'pooja@example.com', 95.0, 91.2, 'Excellent discipline, leadership skills observed'),
-('Amit Khanna', 16, '10th Grade', 26000, 50000, 'Pune, India', '9834567890', 'amit@example.com', 60.5, 48.0, 'Requires intervention, low engagement in class'),
-('Meera Kapoor', 17, '11th Grade', 28000, 60000, 'Jaipur, India', '9898765432', 'meera@example.com', 80.0, 85.5, 'Hardworking, but struggles with time management');
-GO
+-- Classes Table
+CREATE TABLE Classes (
+    ClassID INT PRIMARY KEY IDENTITY,
+    ClassName VARCHAR(50)
+);
 
--- Retrieve data to verify
-SELECT * FROM Students;
-GO
+-- Teachers Table
+CREATE TABLE Teachers (
+    TeacherID INT PRIMARY KEY IDENTITY,
+    Name VARCHAR(100),
+    SubjectID INT,
+    PhoneNumber VARCHAR(20),
+    Email VARCHAR(100)
+);
+
+-- Subjects Table
+CREATE TABLE Subjects (
+    SubjectID INT PRIMARY KEY IDENTITY,
+    SubjectName VARCHAR(100)
+);
+
+-- Courses Table
+CREATE TABLE Courses (
+    CourseID INT PRIMARY KEY IDENTITY,
+    CourseName VARCHAR(100),
+    Description TEXT,
+    TeacherID INT
+);
+
+-- Enrollments Table
+CREATE TABLE Enrollments (
+    EnrollmentID INT PRIMARY KEY IDENTITY,
+    StudentID INT,
+    CourseID INT,
+    Term VARCHAR(50),
+    EnrollmentDate DATE
+);
+
+-- Exams Table
+CREATE TABLE Exams (
+    ExamID INT PRIMARY KEY IDENTITY,
+    SubjectID INT,
+    Term VARCHAR(50)
+);
+
+-- ExamResults Table
+CREATE TABLE ExamResults (
+    ResultID INT PRIMARY KEY IDENTITY,
+    ExamID INT,
+    StudentID INT,
+    MarksObtained DECIMAL(5, 2),
+    TotalMarks DECIMAL(5, 2)
+);
+
+-- Attendance Table
+CREATE TABLE Attendance (
+    AttendanceID INT PRIMARY KEY IDENTITY,
+    StudentID INT,
+    CourseID INT,
+    Date DATE,
+    Status VARCHAR(20)
+);
+
+-- Payments Table
+CREATE TABLE Payments (
+    PaymentID INT PRIMARY KEY IDENTITY,
+    StudentID INT,
+    AmountPaid DECIMAL(10, 2),
+    PaymentDate DATE,
+    PaymentMethod VARCHAR(50)
+);
+
+-- Parents Table
+CREATE TABLE Parents (
+    ParentID INT PRIMARY KEY IDENTITY,
+    StudentID INT,
+    Name VARCHAR(100),
+    Relationship VARCHAR(50),
+    PhoneNumber VARCHAR(20),
+    Email VARCHAR(100)
+);
+
+-- ExamTypes Table
+CREATE TABLE ExamTypes (
+    ExamTypeID INT PRIMARY KEY IDENTITY,
+    ExamType VARCHAR(50),
+    Weightage DECIMAL(5, 2)
+);
+
+-- Grades Table
+CREATE TABLE Grades (
+    GradeID INT PRIMARY KEY IDENTITY,
+    MinMarks DECIMAL(5, 2),
+    MaxMarks DECIMAL(5, 2),
+    Grade VARCHAR(10)
+);
+
+-- HomeroomTeachers Table
+CREATE TABLE HomeroomTeachers (
+    HomeroomID INT PRIMARY KEY IDENTITY,
+    TeacherID INT,
+    ClassID INT
+);
+
+-- Logs Table
+CREATE TABLE Logs (
+    LogID INT PRIMARY KEY IDENTITY,
+    TableName VARCHAR(100),
+    Action VARCHAR(50),
+    ActionDate DATETIME,
+    UserID INT,
+    UserRole VARCHAR(50),
+    OldValue TEXT,
+    NewValue TEXT,
+    Details TEXT
+);
+
+--Inserting Example Value --
+ -- Inserting data into Classes table
+INSERT INTO Classes (ClassName) VALUES ('Class 1');
+INSERT INTO Classes (ClassName) VALUES ('Class 2');
+
+-- Inserting data into Students table
+INSERT INTO Students (Name, Age, ClassID, TuitionFees, TransportFees, ExamFees, FeesPaid, Address, PhoneNumber, Email, AdmissionDate, AttendancePercentage, ExamScore, Status, Remarks) 
+VALUES ('Student 1', 10, 1, 50000.00, 5000.00, 2000.00, 22000.00, 'Address 1', '9876543210', 'student1@school.com', '2025-01-10', 95.00, 88.00, 'Active', 'Good Performance');
+
+-- Inserting data into Teachers table
+INSERT INTO Teachers (Name, SubjectID, PhoneNumber, Email) 
+VALUES ('Teacher 1', 1, '9123456789', 'teacher1@school.com');
+
+-- Inserting data into Subjects table
+INSERT INTO Subjects (SubjectName) VALUES ('Mathematics');
+INSERT INTO Subjects (SubjectName) VALUES ('Science');
+
+-- Inserting data into Payments table
+INSERT INTO Payments (StudentID, AmountPaid, PaymentDate, PaymentMethod) 
+VALUES (1, 10000.00, '2025-03-10', 'Credit Card');
+
+-- Inserting data into Parents table
+INSERT INTO Parents (StudentID, Name, Relationship, PhoneNumber, Email) 
+VALUES (1, 'Parent 1', 'Father', '9876543210', 'parent1@school.com');
+
